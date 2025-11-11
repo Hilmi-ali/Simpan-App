@@ -23,7 +23,7 @@ export default function LostInternet() {
   if (isOnline) return null;
 
   return (
-    <div style={styles.overlay}>
+    <div data-lostinternet style={styles.overlay}>
       <div style={styles.container}>
         <div style={styles.icon}>📡</div>
         <h1 style={styles.title}>Koneksi Terputus</h1>
@@ -133,7 +133,6 @@ const styles = {
   },
 };
 
-// animasi global
 const styleSheet = document.createElement("style");
 styleSheet.innerHTML = `
 @keyframes fadeIn {
@@ -149,9 +148,9 @@ styleSheet.innerHTML = `
   to { background-position: 100px 100px; }
 }
 @media (max-width: 768px) {
-  h1 { font-size: 1.5rem !important; }
-  p { font-size: 0.9rem !important; }
-  button { padding: 10px 22px !important; font-size: 0.9rem !important; }
+  div[data-lostinternet] h1 { font-size: 1.5rem ; }
+  div[data-lostinternet] p { font-size: 0.9rem ; }
+  div[data-lostinternet] button { padding: 10px 22px ; font-size: 0.9rem ; }
 }
 `;
 document.head.appendChild(styleSheet);

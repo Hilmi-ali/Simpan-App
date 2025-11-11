@@ -2,9 +2,9 @@ import React, { useState, useCallback } from "react";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import * as XLSX from "xlsx";
+import { toast } from "react-toastify";
 
 export default function ImportExcelModal({ open, onClose, onSuccess }) {
-  // Semua hook harus dipanggil di awal fungsi, tanpa kondisi
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -51,16 +51,14 @@ export default function ImportExcelModal({ open, onClose, onSuccess }) {
         try {
           console.log("✅ File dibaca, mulai parsing...");
           const data = new Uint8Array(e.target.result);
-          console.log("📂 Data Uint8Array:", data);
+
           const workbook = XLSX.read(data, { type: "array" });
-          console.log("📘 Workbook:", workbook);
+
           const sheetName = workbook.SheetNames[0];
-          console.log("📑 Sheet yang dipakai:", sheetName);
+
           const worksheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(worksheet);
-          console.log("📊 Data JSON hasil parsing:", jsonData);
 
-          // Validasi kolom
           for (const item of jsonData) {
             if (
               !item.nis ||
@@ -81,7 +79,6 @@ export default function ImportExcelModal({ open, onClose, onSuccess }) {
 
           // Upload ke Firestore
           for (const item of jsonData) {
-            console.log("⬆️ Uploading item:", item);
             await addDoc(collection(db, "students"), {
               nis: item.nis.toString(),
               nama: item.nama,
@@ -94,7 +91,7 @@ export default function ImportExcelModal({ open, onClose, onSuccess }) {
             });
           }
           console.log("🎉 Semua data berhasil diupload ke Firestore!");
-          alert("Import berhasil!");
+          toast.success("Import berhasil!");
           onSuccess();
           onClose();
         } catch (err) {
@@ -111,7 +108,7 @@ export default function ImportExcelModal({ open, onClose, onSuccess }) {
         setLoading(false);
       };
       console.log("📥 Mulai baca file...");
-      reader.readAsArrayBuffer(file); // <-- lebih aman
+      reader.readAsArrayBuffer(file);
     } catch (err) {
       console.error("❌ Error luar:", err);
       setError("Gagal memproses file: " + err.message);
@@ -126,7 +123,6 @@ export default function ImportExcelModal({ open, onClose, onSuccess }) {
       <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <h3 style={{ marginBottom: 20 }}>Import Data Siswa dari Excel</h3>
 
-        {/* Link download template */}
         <p style={{ marginBottom: 20, fontSize: 14, color: "#aaa" }}>
           <a
             href="/template-import-data.xlsx"

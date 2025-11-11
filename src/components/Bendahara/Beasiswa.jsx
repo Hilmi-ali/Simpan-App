@@ -70,7 +70,6 @@ export default function KelolaBeasiswa() {
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       setBeasiswaList(data);
 
-      // Ambil tahun ajaran unik
       const years = [...new Set(data.map((b) => b.tahunAjaran))].filter(
         Boolean
       );
@@ -113,23 +112,17 @@ export default function KelolaBeasiswa() {
         reader.readAsBinaryString(excelFile);
       });
 
-      console.log("📑 Jumlah baris Excel:", data.length);
-      console.log("📑 Contoh data Excel baris pertama:", data[0]);
-
       let totalInserted = 0;
 
       for (const row of data) {
         const nis = row.nis ? String(row.nis).trim() : null;
         const jenisBeasiswa = row.jenisBeasiswa || "BOP";
 
-        // Ambil dari input kategori (luar / sekolah)
         let nominal = 0;
         let persentase = "";
 
         if (kategoriBeasiswa === "luar") {
           persentase = row.persentase ? String(row.persentase).trim() : "";
-          // Jika kamu ingin simpan juga nominal perkiraan, bisa ubah di sini
-          // nominal = hitung dari total SPP misalnya
         } else {
           nominal = Number(row.nominal) || 0;
         }
@@ -173,7 +166,6 @@ export default function KelolaBeasiswa() {
         }
       }
 
-      console.log(`✅ Total beasiswa tersimpan: ${totalInserted}`);
       showAlert("✅ Import selesai!");
 
       // Refresh list beasiswa
@@ -188,7 +180,6 @@ export default function KelolaBeasiswa() {
     }
   };
 
-  //  Filter by tahun ajaran + search
   const filteredBeasiswa = beasiswaList.filter((b) => {
     const matchesYear = tahunAjaran ? b.tahunAjaran === tahunAjaran : true;
     const q = search.toLowerCase();
@@ -217,7 +208,7 @@ export default function KelolaBeasiswa() {
   return (
     <div
       style={{
-        padding: "0px 24px",
+        padding: "20px 24px",
         background: "#121212",
         minHeight: "100vh",
         color: "#fff",

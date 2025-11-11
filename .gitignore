@@ -42,7 +42,6 @@ yarn-debug.log*
 yarn-error.log*
 .cache/
 
-/api folder
 api/serviceAccountKey.json
 api/server.js
 

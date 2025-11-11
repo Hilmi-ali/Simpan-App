@@ -36,3 +36,60 @@
     transform: rotate(360deg);
   }
 }
+
+/* =========================
+   🌙 Tema Gelap & ☀️ Tema Terang
+   ========================= */
+body.dark {
+  background-color: #0f172a; /* warna dasar gelap */
+  color: #f1f5f9; /* teks terang */
+  transition: all 0.3s ease;
+}
+
+body.light {
+  background-color: #f8fafc; /* warna dasar terang */
+  color: #0f172a; /* teks gelap */
+  transition: all 0.3s ease;
+}
+
+/* contoh komponen kartu / box */
+.card {
+  border-radius: 12px;
+  padding: 16px;
+  transition: 0.3s ease;
+}
+
+body.dark .card {
+  background-color: #1e293b;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+body.light .card {
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* tombol toggle */
+.theme-toggle {
+  border: none;
+  background: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+body.dark .theme-toggle {
+  color: #f8fafc;
+  background-color: #1e293b;
+}
+
+body.light .theme-toggle {
+  color: #0f172a;
+  background-color: #e2e8f0;
+}
+
+.theme-toggle:hover {
+  opacity: 0.8;
+}

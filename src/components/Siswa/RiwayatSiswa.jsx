@@ -16,11 +16,13 @@ export default function RiwayatSiswa({ tagihanList, userData }) {
   const [showStruk, setShowStruk] = useState(false);
   const [selectedRiwayat, setSelectedRiwayat] = useState(null);
 
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
   const safeFormatRupiah = (nominal) => {
     if (nominal === undefined || nominal === null) return "Rp 0";
     return "Rp " + Number(nominal).toLocaleString("id-ID");
   };
-  // Ambil ulang status tagihan dari Firestore biar selalu update
+
   useEffect(() => {
     const fetchTagihanWithStatus = async () => {
       try {
@@ -68,7 +70,6 @@ export default function RiwayatSiswa({ tagihanList, userData }) {
     }
   }, [tagihanList]);
 
-  // Kelompokkan tagihan berdasarkan tahun ajaran
   useEffect(() => {
     if (tagihanList.length > 0) {
       const grouped = {};
@@ -189,7 +190,7 @@ export default function RiwayatSiswa({ tagihanList, userData }) {
             alignItems: "center",
             justifyContent: "center",
             zIndex: 9999,
-            padding: "0px", // jarak dari tepi layar
+            padding: "0px",
           }}
         >
           <div
@@ -203,8 +204,8 @@ export default function RiwayatSiswa({ tagihanList, userData }) {
               display: "flex",
               flexDirection: "column",
               gap: 10,
-              height: "60vh", // <-- ukuran modal setengah layar
-              overflowY: "auto", // scroll kalau konten banyak
+              height: "60vh",
+              overflowY: "auto",
             }}
           >
             <div
@@ -229,16 +230,16 @@ export default function RiwayatSiswa({ tagihanList, userData }) {
               <button
                 onClick={() => setShowRiwayat(false)}
                 style={{
-                  background: "#b72b2b",
+                  background: "rgba(255, 255, 255, 0.1)",
                   border: "none",
                   padding: "6px 10px",
-                  borderRadius: 6,
+                  borderRadius: "50%",
                   color: "#fff",
                   cursor: "pointer",
-                  fontSize: "0.85rem",
+                  fontSize: 16,
                 }}
               >
-                Tutup
+                ✕
               </button>
             </div>
 

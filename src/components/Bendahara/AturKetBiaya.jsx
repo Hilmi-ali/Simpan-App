@@ -253,14 +253,14 @@ export default function AturKetTagihan() {
             </div>
 
             <div style={styles.modalActions}>
-              <button style={styles.saveBtn} onClick={handleSave}>
-                Simpan
-              </button>
               <button
                 style={styles.cancelBtn}
                 onClick={() => setShowModal(false)}
               >
                 Batal
+              </button>
+              <button style={styles.saveBtn} onClick={handleSave}>
+                Simpan
               </button>
             </div>
           </div>
@@ -308,6 +308,7 @@ const styles = {
     position: "fixed",
     top: 0,
     left: 0,
+    backdropFilter: "blur(1px)",
     width: "100%",
     height: "100%",
     background: "rgba(0,0,0,0.7)",
@@ -345,7 +346,7 @@ const styles = {
     borderRadius: 10,
     display: "flex",
     flexDirection: "column",
-    gap: 10,
+    gap: 6,
     minWidth: 300,
   },
   input: {

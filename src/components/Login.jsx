@@ -5,6 +5,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { color, hover } from "framer-motion";
 import { FaUserCircle, FaEye, FaEyeSlash } from "react-icons/fa";
+import bcrypt from "bcryptjs";
 
 export default function Login() {
   const [nis, setNis] = useState("");
@@ -19,10 +20,9 @@ export default function Login() {
   const [adminError, setAdminError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  //  State untuk cek layar
+
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
 
-  // Update state saat layar di-resize
   useEffect(() => {
     const handleResize = () => {
       setIsDesktop(window.innerWidth >= 768);
@@ -53,29 +53,44 @@ export default function Login() {
     }
   };
 
-  //  Login admin
-  const handleAdminLogin = (e) => {
+  const handleAdminLogin = async (e) => {
     e.preventDefault();
-    if (adminCode === "RIZKI00") {
-      setAdminError("");
-      setShowAdminModal(false);
-      navigate("/dashboard-bendahara");
-    } else {
-      setAdminError("Kode admin salah");
+    try {
+      const q = query(collection(db, "bendahara"));
+      const snap = await getDocs(q);
+
+      let found = false;
+
+      snap.forEach((docSnap) => {
+        const admin = docSnap.data();
+
+        if (bcrypt.compareSync(adminCode, admin.password)) {
+          found = true;
+          const adminData = { ...admin, id: docSnap.id };
+          sessionStorage.setItem("adminSession", JSON.stringify(adminData));
+          navigate("/dashboard-bendahara");
+        }
+      });
+
+      if (!found) {
+        setAdminError("Kode admin salah");
+      } else {
+        setShowAdminModal(false);
+      }
+    } catch (error) {
+      console.error("Login admin error:", error);
+      setAdminError("Terjadi kesalahan saat login.");
     }
   };
 
   useEffect(() => {
-    //  Nonaktifkan scroll body
     document.body.style.overflow = "hidden";
     return () => {
-      // scroll normal ketika pindah halaman
       document.body.style.overflow = "auto";
     };
   }, []);
   return (
     <div style={styles.pageContainer}>
-      {/* Form siswa */}
       <form onSubmit={handleLogin} style={styles.formContainer}>
         <h2 style={styles.title}>LOGIN</h2>
         <input
@@ -122,7 +137,6 @@ export default function Login() {
         </div>
       )}
 
-      {/*  Modal login admin */}
       {showAdminModal && (
         <div
           style={styles.modalOverlay}

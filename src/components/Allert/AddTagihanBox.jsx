@@ -1,4 +1,3 @@
-// src/components/Allert/AddTagihanBox.jsx
 import React, { useState, useEffect } from "react";
 import {
   collection,
@@ -62,7 +61,7 @@ export default function AddTagihanBox({ onClose, refreshTagihan }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //  Cegah klik ganda
+
     if (loading) return;
 
     if (!jenisTagihan.trim() || !nominal.trim()) {
@@ -76,7 +75,6 @@ export default function AddTagihanBox({ onClose, refreshTagihan }) {
 
     setLoading(true);
     try {
-      // Filter siswa sesuai pilihan
       // let conditions = [where("role", "==", "siswa")];
       let conditions = [where("role", "==", "siswa")];
       if (kelas) conditions.push(where("kelas", "==", kelas));
@@ -85,7 +83,7 @@ export default function AddTagihanBox({ onClose, refreshTagihan }) {
       const q = query(collection(db, "students"), ...conditions);
       const snapshot = await getDocs(q);
 
-      // Filter manual siswa aktif (kelas bukan "LULUS")
+      // Filter manual siswa aktif
       const activeStudents = snapshot.docs.filter((doc) => {
         const kelas = (doc.data().kelas || "").trim().toLowerCase();
         return kelas && kelas !== "lulus";
@@ -102,9 +100,9 @@ export default function AddTagihanBox({ onClose, refreshTagihan }) {
         return addDoc(collection(db, "tagihan"), {
           studentUID: doc.id,
           jenisTagihan: jenisTagihan.trim(),
-          nominal: parseInt(nominal), // total tagihan
-          sudahBayar: 0, // default 0
-          sisaTagihan: parseInt(nominal), // awalnya sama dengan nominal
+          nominal: parseInt(nominal),
+          sudahBayar: 0,
+          sisaTagihan: parseInt(nominal),
           status: "belum",
           tahunAjaran,
           tanggalBuat: serverTimestamp(),
@@ -157,7 +155,7 @@ export default function AddTagihanBox({ onClose, refreshTagihan }) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h3>Buat Tagihan Baru (Dukungan Cicilan)</h3>
+        <h3>Buat Tagihan Baru</h3>
         <form onSubmit={handleSubmit}>
           <label style={styles.label}>
             Tahun Ajaran

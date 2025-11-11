@@ -28,7 +28,6 @@ export default function BuatTagihan() {
   const [deleteMode, setDeleteMode] = useState(false);
   const [selectedItems, setSelectedItems] = useState([]);
 
-  // Ambil daftar tahun ajaran dari tagihan
   const fetchTahunAjaran = async () => {
     const q = query(collection(db, "tagihan"));
     const snapshot = await getDocs(q);
@@ -46,18 +45,15 @@ export default function BuatTagihan() {
       setSelectedTahun(sortedTahun[0]);
   };
 
-  // Ambil tagihan berdasarkan tahun ajaran + data siswa
   const fetchTagihanByTahun = async (tahun) => {
     if (!tahun) return setTagihanList([]);
     const q = query(
       collection(db, "tagihan"),
       where("tahunAjaran", "==", tahun),
-      orderBy("tanggalBuat", "desc"),
-      limit(5)
+      orderBy("tanggalBuat", "desc")
     );
     const snapshot = await getDocs(q);
 
-    // Ambil data siswa dan gabungkan
     const listWithSiswa = await Promise.all(
       snapshot.docs.map(async (docSnap) => {
         const data = docSnap.data();
@@ -129,7 +125,6 @@ export default function BuatTagihan() {
     fetchTagihanByTahun(selectedTahun);
   }, [selectedTahun]);
 
-  // toggle checklist
   const toggleSelect = (id) => {
     if (selectedItems.includes(id)) {
       setSelectedItems(selectedItems.filter((x) => x !== id));
@@ -138,7 +133,6 @@ export default function BuatTagihan() {
     }
   };
 
-  // hapus terpilih
   const handleDeleteSelected = async () => {
     if (selectedItems.length === 0)
       return toast.warn("Tidak ada tagihan yang dipilih.");
@@ -154,7 +148,6 @@ export default function BuatTagihan() {
     fetchTagihanByTahun(selectedTahun);
   };
 
-  //  hapus semua hasil filter
   const handleDeleteAll = async () => {
     if (filteredTagihan.length === 0)
       return toast.warn("Tidak ada data untuk dihapus.");
@@ -194,7 +187,6 @@ export default function BuatTagihan() {
           Buat Tagihan Kolektif
         </h2>
 
-        {/*  tombol mode hapus */}
         <button
           style={{
             padding: "8px 15px",
@@ -213,7 +205,6 @@ export default function BuatTagihan() {
         </button>
       </div>
 
-      {/* Tombol Buat Tagihan Baru */}
       {!deleteMode && (
         <button
           style={{
@@ -231,7 +222,6 @@ export default function BuatTagihan() {
         </button>
       )}
 
-      {/* Modal Box buat tagihan */}
       {showModal && (
         <AddTagihanBox
           onClose={() => setShowModal(false)}
@@ -303,7 +293,6 @@ export default function BuatTagihan() {
           ))}
         </select>
 
-        {/*  tombol hapus semua */}
         {deleteMode && (
           <button
             style={{
@@ -403,8 +392,6 @@ export default function BuatTagihan() {
                     {item.kelas} {item.jurusan}
                   </span>
                 </div>
-
-                {/*  Checkbox di mode hapus */}
                 {deleteMode && (
                   <input
                     type="checkbox"

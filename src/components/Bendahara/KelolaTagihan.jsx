@@ -67,7 +67,6 @@ export default function KelolaTagihan() {
         const snapshot = await getDocs(q);
         const list = snapshot.docs.map((doc) => doc.data().tahun);
         setTahunAjaranList(list);
-        console.log("🔥 Tahun ajaran ditemukan:", list);
       } catch (error) {
         console.error("Gagal memuat tahun ajaran:", error);
       }

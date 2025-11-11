@@ -55,7 +55,7 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
     setAlertMessage(msg);
     setShowAlertBox(true);
 
-    // Tutup otomatis setelah 3 detik
+    // 3 detik
     setTimeout(() => {
       setShowAlertBox(false);
     }, 3000);
@@ -146,7 +146,6 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
         for (const t of tagihanList) {
           const namaTagihan = (t.jenisTagihan || "").toLowerCase().trim();
 
-          // ⚠️ Skip tagihan OSIS & PRAMUKA
           if (namaTagihan.includes("osis") || namaTagihan.includes("pramuka")) {
             console.log(`🚫 Lewati potongan untuk tagihan: ${t.jenisTagihan}`);
             continue;
@@ -168,7 +167,6 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
           });
         }
 
-        // tandai agar tidak dijalankan lagi
         await updateDoc(doc(db, "beasiswa", bLuar.id), {
           sudahDiterapkan: true,
         });
@@ -216,7 +214,6 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
           });
         }
 
-        // tandai agar tidak diterapkan lagi
         await updateDoc(doc(db, "beasiswa", bSekolah.id), {
           sudahDiterapkan: true,
         });
@@ -237,15 +234,14 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
     }
   };
 
-  // Ambil daftar tahun ajaran unik dari tagihan
   const tahunFromTagihan = [
     ...new Set(localTagihanList.map((t) => t.tahunAjaran)),
   ].sort((a, b) => {
     const [aStart] = a.split("/").map(Number);
     const [bStart] = b.split("/").map(Number);
-    return bStart - aStart; // urut dari yang terbaru
+    return bStart - aStart;
   });
-  // Jika belum ada pilihan tahun ajaran, set default ke tahun terbaru
+
   useEffect(() => {
     if (tahunFromTagihan.length > 0 && !selectedTahunAjaran) {
       setSelectedTahunAjaran(tahunFromTagihan[0]);
@@ -257,12 +253,8 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
     (t) => t.tahunAjaran === selectedTahunAjaran
   );
 
-  // const filtered = tagihan.filter((t) => t.status === "belum");
-
-  // Urutkan & filter tagihan berdasarkan status dan tahun ajaran
   const order = ["spp", "uang gedung", "uang praktik", "osis & pramuka"];
 
-  // Fungsi normalisasi biar tahan typo dan variasi
   const normalize = (str = "") =>
     str
       .toLowerCase()
@@ -271,7 +263,6 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
       .replace(/&/g, "dan")
       .trim();
 
-  // Filter tagihan tahun terpilih dan status belum
   const belumTagihan = filteredTagihan.filter((t) => t.status === "belum");
 
   // Urutkan sesuai prioritas
@@ -439,7 +430,7 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
         <div
           style={{
             display: "flex",
-            gap: isMobile <= 768 ? "4px" : "8px",
+            gap: "8px",
             marginBottom: "16px",
             flexWrap: "wrap",
           }}
@@ -449,17 +440,18 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
               key={th}
               onClick={() => setSelectedTahunAjaran(th)}
               style={{
-                padding: isMobile <= 768 ? "4px 10px" : "6px 14px",
-                fontSize: isMobile <= 768 ? 9 : 13,
-                borderRadius: 8,
+                padding: isMobile ? "6px 10px" : "6px 14px",
+                fontSize: isMobile ? 12 : 13,
+                borderRadius: 6,
                 border: "1px solid #555",
                 background:
                   selectedTahunAjaran === th ? "#CEFE06" : "transparent",
                 color: selectedTahunAjaran === th ? "#000" : "#eee",
                 fontWeight: selectedTahunAjaran === th ? 700 : 400,
                 cursor: "pointer",
+                alignItems: "center",
                 transition: "0.3s",
-                minWidth: isMobile <= 768 ? "70px" : "auto",
+                minWidth: isMobile ? "50px" : "auto",
               }}
             >
               {th}
@@ -479,11 +471,11 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
             key={item.id}
             style={{
               background: "#000",
-              borderRadius: 16,
+              borderRadius: 12,
               height: "62px",
               border: "1px solid #555",
-              padding: "15px 18px",
-              paddingBottom: 23,
+              padding: "13px 18px",
+              paddingBottom: 18,
               marginBottom: 10,
               cursor: "pointer",
               boxShadow: "0 6px 16px rgba(0,0,0,0.1)",
@@ -501,7 +493,7 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
               }}
             >
               <span
-                style={{ fontSize: 14, fontWeight: 500, color: "#dce3ebff" }}
+                style={{ fontSize: 14, fontWeight: 700, color: "#dce3ebff" }}
               >
                 {item.jenisTagihan}
               </span>
@@ -533,8 +525,6 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
                   bottom: 14,
                   position: "relative",
                   color: "#dce3ebff",
-
-                  // alignItems: "center",
                 }}
               >
                 <p>
@@ -545,7 +535,7 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
                     Rp {formatRupiah(item.sisaTagihan)}
                   </span>
                 </p>
-                <p>
+                <p style={{ fontSize: 11 }}>
                   Total:{" "}
                   <span style={{ color: "#2ecc71", fontWeight: 100 }}>
                     Rp {formatRupiah(item.nominal ?? 0)}
@@ -562,9 +552,9 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
               >
                 {item.tanggal
                   ? new Date(
-                      item.tanggal.split("/")[2], // tahun
-                      item.tanggal.split("/")[1] - 1, // bulan (0-based)
-                      item.tanggal.split("/")[0] // tanggal
+                      item.tanggal.split("/")[2],
+                      item.tanggal.split("/")[1] - 1,
+                      item.tanggal.split("/")[0]
                     ).toLocaleDateString("id-ID", {
                       day: "numeric",
                       month: "long",
@@ -611,7 +601,6 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
               animation: "fadeIn 0.5s ease-out",
             }}
           >
-            {/* Tombol Tutup */}
             <button
               onClick={() => setShowModal(false)}
               style={{
@@ -623,9 +612,9 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
                 justifyContent: "center",
                 background: "rgba(255,255,255,0.1)",
                 border: "none",
-                width: isMobile <= 768 ? 36 : 32, // ukuran responsif
+                width: isMobile <= 768 ? 36 : 32,
                 height: isMobile <= 768 ? 22 : 32,
-                borderRadius: isMobile <= 768 ? "16px" : "50%", // lonjong di HP
+                borderRadius: isMobile <= 768 ? "16px" : "50%",
                 color: "#fff",
                 cursor: "pointer",
                 fontSize: 16,
@@ -699,7 +688,6 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
               </p>
             </div>
 
-            {/* Catatan Beasiswa */}
             {(selectedTagihan.catatanBeasiswaSekolah ||
               selectedTagihan.catatanBeasiswaLuar) && (
               <div
@@ -725,7 +713,6 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
               </div>
             )}
 
-            {/* Input Nominal */}
             <input
               type="number"
               placeholder="Masukkan nominal pembayaran"
@@ -744,7 +731,6 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
               }}
             />
 
-            {/* Tombol Aksi */}
             <div style={{ display: "flex", gap: 12 }}>
               <button
                 // onClick={handleBayarTransfer}
@@ -766,7 +752,7 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
                   toast.style.transition = "opacity 0.3s ease";
                   document.body.appendChild(toast);
 
-                  // Hilangkan toast setelah 2 detik
+                  // 2 detik
                   setTimeout(() => {
                     toast.style.opacity = "0";
                     setTimeout(() => toast.remove(), 300);
@@ -850,7 +836,7 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
           style={{
             position: "fixed",
             bottom: "85%",
-            // right: "50%",
+
             display: "flex",
             left: 20,
             alignItems: "center",
@@ -861,7 +847,7 @@ export default function TagihanSiswa({ userData, formatRupiah }) {
             boxShadow: "0 8px 25px rgba(0,0,0,0.3)",
             zIndex: 99999,
             animation: "slideUp 0.4s ease-out",
-            borderLeft: "4px solid #22c55e", // hijau
+            borderLeft: "4px solid #22c55e",
             minWidth: "300px",
             maxWidth: "300px",
           }}

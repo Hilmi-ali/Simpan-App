@@ -51,15 +51,14 @@ export default function DashboardSiswa() {
 
   useEffect(() => {
     if (windowWidth <= 768) {
-      setIsSidebarOpen(false); // auto close di layar kecil
+      setIsSidebarOpen(false);
     } else {
-      setIsSidebarOpen(true); // auto open lagi kalau pindah ke layar besar
+      setIsSidebarOpen(true);
     }
   }, [windowWidth]);
 
   useEffect(() => {
     if (!studentId) {
-      // alert("Silakan login terlebih dahulu.");
       navigate("/");
       return;
     }
@@ -76,7 +75,6 @@ export default function DashboardSiswa() {
         const data = docSnap.data();
         setUserData({ id: studentId, ...data });
 
-        // ambil keterangan tagihan
         if (data.angkatan && data.jurusan) {
           const angkatanStr = data.angkatan.toString().trim();
           const jurusanStr = (data.jurusan || "").trim().toUpperCase();
@@ -90,7 +88,6 @@ export default function DashboardSiswa() {
           if (!querySnap.empty) setKeteranganTagihan(querySnap.docs[0].data());
         }
 
-        // tentukan tahun ajaran
         const currentYear = new Date().getFullYear();
         let options = [`${currentYear}/${currentYear + 1}`];
 
@@ -108,7 +105,7 @@ export default function DashboardSiswa() {
         }
 
         setTahunOptions(options);
-        setSelectedTahunAjaran(options[options.length - 1]); // tahun sekarang terakhir
+        setSelectedTahunAjaran(options[options.length - 1]);
         setLoading(false);
       } catch (err) {
         console.error("Error ambil data siswa:", err);
@@ -120,7 +117,6 @@ export default function DashboardSiswa() {
     fetchSiswa();
   }, [navigate, studentId]);
 
-  // ── FETCH TAGIHAN SISWA ──
   useEffect(() => {
     const fetchTagihan = async () => {
       if (!userData) return;
@@ -133,7 +129,6 @@ export default function DashboardSiswa() {
         const snap = await getDocs(q);
         const data = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-        // 🔽 Urutkan sesuai prioritas pasti
         const sortedData = data.sort((a, b) => {
           const normalize = (str) =>
             (str || "")
@@ -146,7 +141,7 @@ export default function DashboardSiswa() {
             spp: 1,
             uanggedung: 2,
             uangpraktek: 3,
-            uangpraktik: 3, // antisipasi penulisan lain
+            uangpraktik: 3,
             pramukaosis: 4,
             osispramuka: 4,
             osisdanpramuka: 4,
@@ -189,13 +184,10 @@ export default function DashboardSiswa() {
         await updateDoc(studentRef, { activeSession: null });
       }
 
-      // 🔹 Bersihkan semua session di browser
       sessionStorage.clear();
 
-      // 🔹 Tutup modal logout
       setShowLogoutModal(false);
 
-      // 🔹 Redirect ke halaman login
       toast.success("Berhasil logout.");
       navigate("/");
 
@@ -211,13 +203,12 @@ export default function DashboardSiswa() {
     return value.toLocaleString("id-ID");
   };
 
-  // Tutup sidebar kalau klik di luar
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         sidebarRef.current &&
         !sidebarRef.current.contains(event.target) &&
-        window.innerWidth <= 768 && // hanya di HP/tab kecil
+        window.innerWidth <= 768 &&
         isSidebarOpen
       ) {
         setIsSidebarOpen(false);
@@ -248,7 +239,7 @@ export default function DashboardSiswa() {
           jumlah: keteranganTagihan.spp,
           style: {
             border: "1px solid rgba(63, 63, 63, 0.6)",
-            color: "#CEFE06", // 🟡 teks kuning
+            color: "#CEFE06",
             borderRadius: "12px",
             padding: "12px",
             fontWeight: "bold",
@@ -258,9 +249,9 @@ export default function DashboardSiswa() {
           nama: "Uang Gedung",
           jumlah: keteranganTagihan.uangGedung,
           style: {
-            backgroundColor: "#0e0e0eff", // 🔲 hitam
-            border: "10px solid #CEFE06", // 🟡 border kuning
-            color: "#CEFE06", // 🟡 teks kuning
+            backgroundColor: "#0e0e0eff",
+            border: "10px solid #CEFE06",
+            color: "#CEFE06",
             borderRadius: "12px",
             padding: "12px",
             fontWeight: "bold",
@@ -270,9 +261,9 @@ export default function DashboardSiswa() {
           nama: "Uang Praktik",
           jumlah: keteranganTagihan.uangPraktik,
           style: {
-            backgroundColor: "#000000", // 🔲 hitam
-            border: "10px solid #CEFE06", // 🟡 border kuning
-            color: "#CEFE06", // 🟡 teks kuning
+            backgroundColor: "#000000",
+            border: "10px solid #CEFE06",
+            color: "#CEFE06",
             borderRadius: "12px",
             padding: "12px",
             fontWeight: "bold",
@@ -282,9 +273,9 @@ export default function DashboardSiswa() {
           nama: "Pramuka & OSIS",
           jumlah: keteranganTagihan.pramukaOsis,
           style: {
-            backgroundColor: "#000000", // 🔲 hitam
-            border: "10px solid #CEFE06", // 🟡 border kuning
-            color: "#CEFE06", // 🟡 teks kuning
+            backgroundColor: "#000000",
+            border: "10px solid #CEFE06",
+            color: "#CEFE06",
             borderRadius: "12px",
             padding: "12px",
             fontWeight: "bold",
@@ -385,11 +376,10 @@ export default function DashboardSiswa() {
           justifyContent: "center",
           alignItems: "center",
           top: 16,
-          width: 20,
-          // ✅ posisi mengikuti sidebar
-          left: isSidebarOpen ? 220 : 10,
+          width: 34,
+          left: isSidebarOpen ? 230 : 16,
           zIndex: 10000,
-
+          padding: 8,
           marginTop: 12,
           borderRadius: 6,
           backgroundColor: isSidebarOpen ? "#CEFE06" : "transparent",
@@ -492,7 +482,7 @@ export default function DashboardSiswa() {
         )}
         <section style={styles.contentArea}>{renderContent()}</section>
       </main>
-      {/* Modal Logout */}
+
       {showLogoutModal && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalBox}>
@@ -602,9 +592,9 @@ const styles = {
     paddingBottom: 15,
   },
   userName: {
-    fontSize: 20,
-    fontWeight: "800",
-    marginBottom: 6,
+    fontSize: 18,
+    fontWeight: 700,
+    marginBottom: 8,
     color: "#fff",
   },
   userMeta: {

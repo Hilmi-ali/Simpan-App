@@ -1,4 +1,3 @@
-// src/components/Bendahara/ClassUpdate.jsx
 import React, { useEffect, useState } from "react";
 import {
   collection,
@@ -23,11 +22,9 @@ export default function ClassUpdate() {
 
   const kelasList = ["10", "11", "12"];
 
-  // Ambil tahun aktif hanya sekali
   useEffect(() => {
     const fetchTahun = async () => {
       const snap = await getDocs(collection(db, "tahunAjaran"));
-      console.log(`📘 [READ] Jumlah dokumen tahun dibaca: ${snap.size}`);
       const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
       const aktif = list.find((t) => t.aktif);
       if (aktif) setTahunAktif(aktif.tahun);
@@ -35,9 +32,8 @@ export default function ClassUpdate() {
     fetchTahun();
   }, []);
 
-  // Lazy load siswa hanya untuk kelas yang di-expand
   const fetchSiswaByKelas = async (kelas) => {
-    if (siswaList[kelas]) return; // sudah pernah dibaca, jangan read lagi
+    if (siswaList[kelas]) return;
     const siswaRef = collection(db, "students");
     const q = query(
       siswaRef,
@@ -82,10 +78,9 @@ export default function ClassUpdate() {
 
           if (kelasBaru !== s.kelas) {
             try {
-              // jika siswa kelas 12 (akan jadi LULUS), jangan update tahunAjaran
               const updateData =
                 s.kelas === "12"
-                  ? { kelas: kelasBaru } // tanpa ubah tahunAjaran
+                  ? { kelas: kelasBaru }
                   : { kelas: kelasBaru, tahunAjaran: tahunAktif };
               await updateDoc(doc(db, "students", s.id), updateData);
               result.push({ id: s.id, success: true });
@@ -131,11 +126,13 @@ export default function ClassUpdate() {
   return (
     <div style={styles.box}>
       <h2 style={styles.title}>📚 Kenaikan Kelas</h2>
-      <p style={{ color: "#aaa", marginBottom: 20 }}>
-        Tahun ajaran aktif: <b>{tahunAktif || "-"}</b>
+      <p style={{ color: "#ffffffff", marginBottom: 20, fontSize: 17 }}>
+        Tahun Ajaran Sekarang: <b>{tahunAktif || "-"}</b>
         <br />
-        Klik kelas untuk memuat data. Hilangkan centang bagi siswa yang{" "}
-        <b>tinggal kelas</b>.
+        <span style={{ color: "#c4c4c4ff", fontSize: 14 }}>
+          Klik kelas untuk memuat data. Hilangkan centang bagi siswa yang{" "}
+          <b>tinggal kelas</b>.
+        </span>
       </p>
 
       {/* Search */}
@@ -193,26 +190,92 @@ export default function ClassUpdate() {
         </button>
       </div>
 
-      {/* Modal Konfirmasi */}
       {confirmModal && (
-        <div style={styles.modalOverlay}>
-          <div style={styles.modalBox}>
-            <h3>Konfirmasi Kenaikan Kelas</h3>
-            <p>
-              Apakah Anda yakin ingin memproses kenaikan kelas untuk semua siswa
-              yang dicentang?
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(1px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            animation: "fadeIn 0.25s ease-out",
+          }}
+        >
+          <div
+            style={{
+              background: "linear-gradient(145deg, #1c1c1c, #121212)",
+              borderRadius: 16,
+              padding: "28px 24px",
+              width: "90%",
+              maxWidth: 380,
+              boxShadow: "0 12px 30px rgba(0,0,0,0.5)",
+              color: "#fff",
+              textAlign: "center",
+              animation: "scaleIn 0.25s ease-out",
+            }}
+          >
+            <h3
+              style={{
+                fontSize: 20,
+                fontWeight: 700,
+                marginBottom: 12,
+                color: "#CEFE06",
+              }}
+            >
+              Konfirmasi Kenaikan Kelas
+            </h3>
+            <p
+              style={{
+                fontSize: 15,
+                fontStyle: "bold",
+                color: "#ffffffff",
+                marginBottom: 24,
+                lineHeight: 1.4,
+              }}
+            >
+              Pastikan Siswa dan Tahun Ajaran baru sudah benar!!
             </p>
             <div
               style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}
             >
-              <button style={styles.button} onClick={handleNaikKelas}>
-                Ya
-              </button>
               <button
-                style={styles.button}
+                style={{
+                  flex: 1,
+                  padding: "10px 0",
+                  borderRadius: 8,
+                  border: "none",
+                  fontWeight: 600,
+                  background: "linear-gradient(90deg, #e32424, #650e0eff)",
+                  color: "#fff",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
                 onClick={() => setConfirmModal(false)}
+                onMouseOver={(e) => (e.currentTarget.style.opacity = 0.85)}
+                onMouseOut={(e) => (e.currentTarget.style.opacity = 1)}
               >
                 Batal
+              </button>
+              <button
+                style={{
+                  flex: 1,
+                  padding: "10px 0",
+                  borderRadius: 8,
+                  border: "none",
+                  fontWeight: 600,
+                  background: "linear-gradient(90deg, #0a84ff, #27ae60)",
+                  color: "#fff",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+                onClick={handleNaikKelas}
+                onMouseOver={(e) => (e.currentTarget.style.opacity = 0.85)}
+                onMouseOut={(e) => (e.currentTarget.style.opacity = 1)}
+              >
+                Ya
               </button>
             </div>
           </div>
@@ -258,7 +321,7 @@ const styles = {
     color: "#fff",
   },
   search: {
-    width: "100%",
+    width: "30%",
     padding: "8px 12px",
     borderRadius: 6,
     border: "1px solid #555",
@@ -319,6 +382,8 @@ const styles = {
     padding: 20,
     borderRadius: 10,
     border: "2px solid #0a84ff",
+    width: "400px",
+    height: "auto",
     minWidth: 300,
     color: "#fff",
   },

@@ -49,8 +49,6 @@ import ImportExcelModal from "../Allert/ImportExcelBox";
 import BuatTagihan from "./BuatTagihan";
 import TahunAjaranManage from "./TahunAjaranManage";
 import KelolaBeasiswa from "./Beasiswa";
-import { color } from "framer-motion";
-import { Bot } from "lucide-react";
 
 export default function DashboardBendahara() {
   const [siswaList, setSiswaList] = useState([]);
@@ -108,7 +106,7 @@ export default function DashboardBendahara() {
 
     switch (sortOption) {
       case "terbaru":
-        return [...filtered].reverse(); // Asumsinya data terbaru paling akhir
+        return [...filtered].reverse();
       case "terlama":
         return filtered;
       case "akl":
@@ -130,11 +128,6 @@ export default function DashboardBendahara() {
     }
   };
 
-  // Form inputs modal
-  const [formNIS, setFormNIS] = useState("");
-  const [formNama, setFormNama] = useState("");
-  const [formJurusan, setFormJurusan] = useState("");
-
   const navigate = useNavigate();
 
   const location = useLocation();
@@ -148,7 +141,7 @@ export default function DashboardBendahara() {
 
   const handleMenuClick = (menu) => {
     setActiveMenu(menu);
-    setIsCollapsed(true); // otomatis collapse setelah klik
+    setIsCollapsed(true);
   };
 
   const handleLogout = async () => {
@@ -189,7 +182,6 @@ export default function DashboardBendahara() {
       // limit(20)
     );
     const snapshot = await getDocs(q);
-    console.log(`📘 [READ] Jumlah dokumen siswa dibaca: ${snapshot.size}`);
     const list = snapshot.docs.map((doc) => ({ uid: doc.id, ...doc.data() }));
     setSiswaList(list);
   };
@@ -203,26 +195,19 @@ export default function DashboardBendahara() {
   useEffect(() => {
     const fetchTagihanDanTransaksi = async () => {
       try {
-        // 🔹 Ambil semua dokumen tagihan SEKALI SAJA
         const tagihanSnapshot = await getDocs(collection(db, "tagihan"));
-        console.log(
-          `📘 [READ] Jumlah dokumen tagihan dibaca: ${tagihanSnapshot.size}`
-        );
 
         const tagihanDocs = tagihanSnapshot.docs;
         let totalTagihanTemp = 0;
         let totalUangMasukTemp = 0;
         let monthlyData = {};
 
-        // Simpan transaksi untuk semua tagihan
         const transactionsPromises = tagihanDocs.map(async (tagihanDoc) => {
           const tagihanData = tagihanDoc.data();
 
-          // 💰 Hitung total tagihan & uang masuk
           totalTagihanTemp += tagihanData.nominal || 0;
           totalUangMasukTemp += tagihanData.sudahBayar || 0;
 
-          // 📅 Data bulanan untuk grafik
           const date = tagihanData.tanggalBuat?.toDate();
           if (date) {
             const month = date.toLocaleString("id-ID", { month: "short" });
@@ -233,7 +218,6 @@ export default function DashboardBendahara() {
             monthlyData[month].uangMasuk += tagihanData.sudahBayar || 0;
           }
 
-          // 📜 Ambil subkoleksi riwayat pembayaran
           const riwayatRef = collection(
             db,
             "tagihan",
@@ -241,11 +225,7 @@ export default function DashboardBendahara() {
             "riwayatPembayaran"
           );
           const riwayatSnapshot = await getDocs(riwayatRef);
-          console.log(
-            `📘 [READ] Jumlah dokumen riwayatPembayaran dibaca untuk tagihan ${tagihanDoc.id}: ${riwayatSnapshot.size}`
-          );
 
-          // Format setiap transaksi
           return riwayatSnapshot.docs.map((riwayatDoc) => {
             const rData = riwayatDoc.data();
             const tanggalBayar =
@@ -266,21 +246,16 @@ export default function DashboardBendahara() {
           });
         });
 
-        // Tunggu semua transaksi selesai diambil
         const allTransactions = (
           await Promise.all(transactionsPromises)
         ).flat();
 
-        // Urutkan transaksi terbaru
         allTransactions.sort((a, b) => b.tanggal - a.tanggal);
 
-        // ✅ Set semua state
         setRecentTransactions(allTransactions.slice(0, 10));
         setTotalTagihan(totalTagihanTemp);
         setTotalUangMasuk(totalUangMasukTemp);
         setChartData(Object.values(monthlyData));
-
-        console.log("✅ Transaksi terbaru:", allTransactions.slice(0, 10));
       } catch (error) {
         console.error("❌ Gagal fetch data gabungan:", error);
       }
@@ -520,7 +495,7 @@ export default function DashboardBendahara() {
               <EditSiswaBox onClose={() => setShowEditModal(false)} />
             )}
 
-            {/* Modal pilihan tambah siswa */}
+            {/* Modal tambah siswa */}
             {showAddChoiceModal && (
               <div style={styles.modalOverlay} onClick={closeAddChoiceModal}>
                 <div
@@ -554,8 +529,6 @@ export default function DashboardBendahara() {
                 </div>
               </div>
             )}
-
-            {/* Modal tambah manual  */}
             {showAddModal && (
               <AddSiswaModal
                 open={showAddModal}
@@ -563,8 +536,6 @@ export default function DashboardBendahara() {
                 onSuccess={fetchSiswa}
               />
             )}
-
-            {/* Modal import excel  */}
             {showImportModal && (
               <ImportExcelModal
                 open={showImportModal}
@@ -605,7 +576,6 @@ export default function DashboardBendahara() {
         onMouseEnter={() => setIsCollapsed(false)}
         onMouseLeave={() => setIsCollapsed(true)}
       >
-        {/* Header */}
         <div
           style={{
             ...styles.sidebarHeader,
@@ -663,14 +633,12 @@ export default function DashboardBendahara() {
               </span>
             </button>
 
-            {/* Tooltip saat collapsed */}
             {isCollapsed && hoveredMenu === item.key && (
               <div style={styles.tooltip}>{item.label}</div>
             )}
           </div>
         ))}
 
-        {/* Logout */}
         <div style={{ marginTop: "auto", position: "relative" }}>
           <button
             onClick={() => setShowLogoutModal(true)}
@@ -883,10 +851,7 @@ const styles = {
   },
   chartCardTransaksi: {
     flex: 2,
-    // maxHeight: "300px", // ⬅️ batas tinggi box transaksi
-    // overflow: "hidden",
     background: "#0C0C0C",
-    // height: "200px",
     padding: "15px",
     color: "#fff",
     border: "1px solid #333",
@@ -949,7 +914,6 @@ const styles = {
   statsGrid: {
     // display: "grid",
     display: "flex",
-    // gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
     gap: "7px",
     marginBottom: "10px",
   },
@@ -1002,7 +966,7 @@ const styles = {
     left: 0,
     width: "100vw",
     height: "100vh",
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: "rgba(0,0,0,0.8)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -1013,7 +977,7 @@ const styles = {
     padding: 30,
     borderRadius: 10,
     width: "320px",
-    boxShadow: "0 0 15px rgba(10, 132, 255, 0.8)",
+    boxShadow: "0 0 2px rgba(10, 132, 255, 0.8)",
     color: "#eee",
   },
   label: { display: "block", marginBottom: 10, fontSize: 14, color: "#ccc" },
@@ -1045,7 +1009,6 @@ const styles = {
     boxShadow: "0 2px 6px rgba(0,0,0,0.6)",
   },
   chartTitle: {
-    // marginBottom: "15px",
     fontSize: "14px",
     fontWeight: "600",
     position: "relative",

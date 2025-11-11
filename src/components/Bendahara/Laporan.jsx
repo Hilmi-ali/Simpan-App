@@ -58,7 +58,6 @@ export default function Laporan() {
         const tempData = {};
         jenisList.forEach((j) => (tempData[j] = { tagihan: 0, uangMasuk: 0 }));
 
-        // 🔹 Ambil semua siswa
         const studentsSnap = await getDocs(collection(db, "students"));
         let total = 0;
         let tahunIni = 0;
@@ -69,7 +68,7 @@ export default function Laporan() {
         studentsSnap.forEach((s) => {
           const data = s.data();
           total++;
-          // hanya siswa aktif di tahun ajaran terpilih
+
           const aktif =
             data.tahunAjaran === selectedTahun &&
             data.kelas?.toUpperCase() !== "LULUS";
