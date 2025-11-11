@@ -17,30 +17,28 @@ import DataRiwayat from "./components/Siswa/DataRiwayat";
 import NotFound from "./components/utils/NotFound";
 import Splash from "./components/Splash";
 import LostInternet from "./components/utils/LostInternet";
-import { ThemeProvider } from "./components/utils/ThemeContext";
+// import { ThemeProvider } from "./components/utils/ThemeContext";
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
-        <ToastContainer position="top-right" autoClose={3000} />
-        <LostInternet />
-        <Routes>
-          <Route path="/" element={<Splash />} />
-          <Route path="login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard-bendahara" element={<DashboardBendahara />} />
-          <Route path="/buat-tagihan" element={<BuatTagihan />} />
-          <Route path="/kelola-tagihan/:uid" element={<KelolaTagihan />} />
-          <Route path="/dashboard-siswa" element={<DashboardSiswa />} />
-          <Route path="/struk-pembayaran" element={<HasilTransaksi />} />
-          <Route path="/set-tahun-ajaran" element={<TahunAjaranManage />} />
-          <Route path="/tagihan/:tagihanId/riwayat" element={<DataRiwayat />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Router>
-    </ThemeProvider>
+    <Router>
+      <ToastContainer position="top-right" autoClose={3000} />
+      <LostInternet />
+      <Routes>
+        <Route path="/" element={<Splash />} />
+        <Route path="login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard-bendahara" element={<DashboardBendahara />} />
+        <Route path="/buat-tagihan" element={<BuatTagihan />} />
+        <Route path="/kelola-tagihan/:uid" element={<KelolaTagihan />} />
+        <Route path="/dashboard-siswa" element={<DashboardSiswa />} />
+        <Route path="/struk-pembayaran" element={<HasilTransaksi />} />
+        <Route path="/set-tahun-ajaran" element={<TahunAjaranManage />} />
+        <Route path="/tagihan/:tagihanId/riwayat" element={<DataRiwayat />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
   );
 }
 
