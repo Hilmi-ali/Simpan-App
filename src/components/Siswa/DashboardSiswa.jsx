@@ -592,7 +592,7 @@ const styles = {
     paddingBottom: 15,
   },
   userName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 700,
     marginBottom: 8,
     color: "#fff",
